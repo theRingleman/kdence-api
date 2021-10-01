@@ -7,6 +7,8 @@ import { GoalsModule } from './goals/goals.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/user.entity';
+import { HouseholdEntity } from './households/household.entity';
+import { GoalEntity } from './goals/goal.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { UserEntity } from './users/user.entity';
       username: 'root',
       password: 'root',
       database: 'kdence',
-      entities: [UserEntity],
+      entities: [UserEntity, HouseholdEntity, GoalEntity],
       synchronize: true,
     }),
   ],
