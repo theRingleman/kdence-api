@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/user.entity';
 import { HouseholdEntity } from './households/household.entity';
 import { GoalEntity } from './goals/goal.entity';
+import { TaskEntity } from './tasks/task.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { GoalEntity } from './goals/goal.entity';
       username: 'root',
       password: 'root',
       database: 'kdence',
-      entities: [UserEntity, HouseholdEntity, GoalEntity],
+      entities: [UserEntity, HouseholdEntity, GoalEntity, TaskEntity],
       synchronize: true,
     }),
   ],
