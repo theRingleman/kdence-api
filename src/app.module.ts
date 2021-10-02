@@ -11,6 +11,7 @@ import { HouseholdEntity } from './households/household.entity';
 import { GoalEntity } from './goals/goal.entity';
 import { TaskEntity } from './tasks/task.entity';
 import { RolesModule } from './roles/roles.module';
+import { TaskApprovalEntity } from './tasks/taskApproval.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,13 @@ import { RolesModule } from './roles/roles.module';
       username: 'root',
       password: 'root',
       database: 'kdence',
-      entities: [UserEntity, HouseholdEntity, GoalEntity, TaskEntity],
+      entities: [
+        UserEntity,
+        HouseholdEntity,
+        GoalEntity,
+        TaskEntity,
+        TaskApprovalEntity,
+      ],
       synchronize: true,
     }),
     RolesModule,

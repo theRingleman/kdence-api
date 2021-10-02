@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { GoalEntity } from '../goals/goal.entity';
+import { TaskApprovalEntity } from './taskApproval.entity';
 
 @Entity({ name: 'tasks' })
 export class TaskEntity {
@@ -17,4 +24,7 @@ export class TaskEntity {
 
   @ManyToOne(() => GoalEntity, (goal) => goal.tasks)
   goal: GoalEntity;
+
+  @OneToOne(() => TaskApprovalEntity, (taskApproval) => taskApproval.task)
+  approval?: TaskApprovalEntity;
 }
