@@ -12,23 +12,28 @@ export class GoalsService implements GoalServiceInterface {
     private goalRepo: Repository<GoalEntity>,
   ) {}
 
-  public fetch(id: number): GoalEntity {
-    return new GoalEntity();
+  async save(goal: GoalEntity): Promise<GoalEntity> {
+    return this.goalRepo.save(goal);
+  }
+
+  async fetch(id: number): Promise<GoalEntity> {
+    return this.goalRepo.findOne(id);
   }
 
   create(dto: CreateGoalDto): GoalEntity {
     return this.goalRepo.create(dto);
   }
 
-  delete(goal: GoalEntity): boolean {
-    return false;
+  async delete(goal: GoalEntity): Promise<boolean> {
+    const response = await this.goalRepo.delete(goal);
+    return response.affected >= 1;
   }
 
   isGoalComplete(goal: GoalEntity): boolean {
     return goal.completionValue <= goal.earnedValue;
   }
 
-  update(goal: GoalEntity): boolean {
+  async update(goal: GoalEntity): Promise<boolean> {
     return false;
   }
 

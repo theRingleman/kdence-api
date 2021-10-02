@@ -6,6 +6,12 @@ import { GoalEntity } from './goal.entity';
 
 describe('GoalsService', () => {
   let service: GoalsService;
+  const goalRepo = {
+    create: () => createGoalEntity(),
+    save: () => null,
+    findOne: () => createGoalEntity(),
+    delete: () => true,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -13,7 +19,7 @@ describe('GoalsService', () => {
         GoalsService,
         {
           provide: getRepositoryToken(GoalEntity),
-          useValue: { create: () => createGoalEntity() },
+          useValue: goalRepo,
         },
       ],
     }).compile();
@@ -27,7 +33,7 @@ describe('GoalsService', () => {
 
   describe('fetch', () => {
     it('should return a goal', async () => {
-      const goal = service.fetch(1);
+      const goal = await service.fetch(1);
       expect(goal).toBeDefined();
     });
   });
@@ -41,11 +47,11 @@ describe('GoalsService', () => {
   });
 
   describe('update', () => {
-    it('should update and persist a goal', () => {
-      const goal = service.create(createGoalDto('test', 'Testing', 100000));
+    it('should update and persist a goal', async () => {
+      const goal = createGoalEntity();
       goal.earnedValue = 100;
 
-      service.update(goal);
+      await service.update(goal);
 
       //TODO: Need to mock the repo
       expect(true).toBe(true);
@@ -53,13 +59,13 @@ describe('GoalsService', () => {
   });
 
   describe('delete', () => {
-    it('should remove a goal', () => {
-      const goal = service.create(createGoalDto('test', 'Testing', 100000));
+    it('should remove a goal', async () => {
+      const deleteSpy = jest.spyOn(goalRepo, 'delete').mockReturnValue(true);
+      const goal = createGoalEntity();
 
-      service.delete(goal);
+      await service.delete(goal);
 
-      //TODO: Need to mock the repo
-      expect(true).toBe(true);
+      expect(deleteSpy).toBeCalled();
     });
   });
 
@@ -91,6 +97,18 @@ describe('GoalsService', () => {
       service.completeGoal(goal);
 
       expect(goal.completionDate).toBe(completionDate);
+    });
+  });
+
+  describe('save', () => {
+    it('should persist a goal to the database', async () => {
+      const saveSpy = jest
+        .spyOn(goalRepo, 'save')
+        .mockReturnValue(createGoalEntity());
+      const goal = createGoalEntity();
+
+      await service.save(goal);
+      expect(saveSpy).toBeCalled();
     });
   });
 });
