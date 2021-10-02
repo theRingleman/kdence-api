@@ -11,4 +11,5 @@ export interface TasksServiceInterface {
   isComplete(task: TaskEntity): boolean;
   requestApproval(task: TaskEntity): void;
   isApproved(task: TaskEntity): boolean;
+  approve(task: TaskEntity): Promise<void>;
 }

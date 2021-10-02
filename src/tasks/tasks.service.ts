@@ -11,6 +11,10 @@ export class TasksService implements TasksServiceInterface {
     @InjectRepository(TaskEntity) private taskRepo: Repository<TaskEntity>,
   ) {}
 
+  async approve(task: TaskEntity): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   create(dto: CreateTaskDto): TaskEntity {
     return undefined;
   }

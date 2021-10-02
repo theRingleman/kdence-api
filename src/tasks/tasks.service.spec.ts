@@ -57,4 +57,8 @@ describe('TasksService', () => {
   describe('markAsComplete', () => {
     it('should update the completion timestamp', () => {});
   });
+
+  describe('approve', () => {
+    it('should create and attach a task approval', async () => {});
+  });
 });
