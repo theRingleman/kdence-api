@@ -10,6 +10,7 @@ import { UserEntity } from './users/user.entity';
 import { HouseholdEntity } from './households/household.entity';
 import { GoalEntity } from './goals/goal.entity';
 import { TaskEntity } from './tasks/task.entity';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TaskEntity } from './tasks/task.entity';
       entities: [UserEntity, HouseholdEntity, GoalEntity, TaskEntity],
       synchronize: true,
     }),
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
