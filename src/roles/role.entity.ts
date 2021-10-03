@@ -7,12 +7,6 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 
-export enum Role {
-  Parent = 'parent',
-  Child = 'child',
-  Admin = 'admin',
-}
-
 @Entity({ name: 'roles' })
 export class RoleEntity {
   @PrimaryGeneratedColumn()
