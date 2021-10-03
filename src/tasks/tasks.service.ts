@@ -4,6 +4,7 @@ import { TaskEntity } from './task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TasksServiceInterface } from './tasks.service.interface';
 import { CreateTaskDto } from './dtos/create.task.dto';
+import { TaskApprovalEntity } from './taskApproval.entity';
 
 @Injectable()
 export class TasksService implements TasksServiceInterface {
@@ -12,38 +13,43 @@ export class TasksService implements TasksServiceInterface {
   ) {}
 
   async approve(task: TaskEntity): Promise<void> {
-    throw new Error('Method not implemented.');
+    task.approval = new TaskApprovalEntity();
   }
 
   create(dto: CreateTaskDto): TaskEntity {
-    return undefined;
+    return this.taskRepo.create(dto);
   }
 
-  delete(task: TaskEntity): Promise<boolean> {
-    return Promise.resolve(false);
+  async delete(task: TaskEntity): Promise<boolean> {
+    const response = await this.taskRepo.delete(task);
+    return response.affected >= 1;
   }
 
   fetch(id: number): Promise<TaskEntity> {
-    return Promise.resolve(undefined);
+    return this.taskRepo.findOne(id);
   }
 
   isApproved(task: TaskEntity): boolean {
-    return false;
+    return !!task.approval;
   }
 
   isComplete(task: TaskEntity): boolean {
-    return false;
+    return !!task.completionDate;
   }
 
-  markAsComplete(task: TaskEntity): void {}
+  markAsComplete(task: TaskEntity): TaskEntity {
+    task.completionDate = Date.now();
+    return task;
+  }
 
   requestApproval(task: TaskEntity): void {}
 
-  save(task: TaskEntity): Promise<TaskEntity> {
-    return Promise.resolve(undefined);
+  async save(task: TaskEntity): Promise<TaskEntity> {
+    return this.taskRepo.save(task);
   }
 
-  update(task: TaskEntity): Promise<boolean> {
-    return Promise.resolve(false);
+  async update(task: TaskEntity): Promise<boolean> {
+    const response = await this.taskRepo.update(task.id, task);
+    return response.affected >= 1;
   }
 }

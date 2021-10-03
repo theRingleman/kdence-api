@@ -20,7 +20,7 @@ export class TaskEntity {
   value: number;
 
   @Column()
-  completed: boolean;
+  completionDate?: number;
 
   @ManyToOne(() => GoalEntity, (goal) => goal.tasks)
   goal: GoalEntity;

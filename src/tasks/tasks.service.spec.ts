@@ -2,10 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TaskEntity } from './task.entity';
+import { createDto, createTaskEntity } from './tests/helper.test';
+import { TaskApprovalEntity } from './taskApproval.entity';
 
 describe('TasksService', () => {
   let service: TasksService;
-  const taskRepo = {};
+  let task: TaskEntity;
+  const taskRepo = {
+    update: () => null,
+    findOne: () => null,
+    delete: () => null,
+    save: () => null,
+    create: () => createTaskEntity('testing'),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,6 +25,7 @@ describe('TasksService', () => {
     }).compile();
 
     service = module.get<TasksService>(TasksService);
+    task = createTaskEntity('testing');
   });
 
   it('should be defined', () => {
@@ -23,31 +33,82 @@ describe('TasksService', () => {
   });
 
   describe('create', () => {
-    it('should create an entity based on a dto', () => {});
+    it('should create an entity based on a dto', () => {
+      const dto = createDto('testing');
+
+      const entity = service.create(dto);
+
+      expect(entity.description).toBe(dto.description);
+    });
   });
 
   describe('update', () => {
-    it('should update a task', async () => {});
+    it('should update a task', async () => {
+      const updateSpy = jest
+        .spyOn(taskRepo, 'update')
+        .mockResolvedValueOnce({ affected: 1 });
+      task.description = 'testing again';
+
+      expect(await service.update(task)).toBe(true);
+      expect(updateSpy).toBeCalled();
+    });
   });
 
   describe('delete', () => {
-    it('should delete a task', async () => {});
+    it('should delete a task', async () => {
+      const deleteSpy = jest
+        .spyOn(taskRepo, 'delete')
+        .mockResolvedValueOnce({ affected: 1 });
+
+      expect(await service.delete(task)).toBe(true);
+      expect(deleteSpy).toBeCalled();
+    });
   });
 
   describe('fetch', () => {
-    it('should query for a task', async () => {});
+    it('should query for a task', async () => {
+      const findOneSpy = jest
+        .spyOn(taskRepo, 'findOne')
+        .mockReturnValueOnce(task);
+
+      await service.fetch(1);
+
+      expect(findOneSpy).toBeCalled();
+    });
   });
 
   describe('save', () => {
-    it('should save a task', async () => {});
+    it('should save a task', async () => {
+      const saveSpy = jest.spyOn(taskRepo, 'save');
+
+      await service.save(task);
+
+      expect(saveSpy).toBeCalled();
+    });
   });
 
   describe('isComplete', () => {
-    it('should check on the completion status for a task', () => {});
+    it('should check on the completion status for a task', () => {
+      expect(service.isComplete(task)).toBe(false);
+    });
+
+    it('should be true when a task is complete', () => {
+      task.completionDate = Date.now();
+
+      expect(service.isComplete(task)).toBe(true);
+    });
   });
 
   describe('isApproved', () => {
-    it('should check on the approval status of the task', () => {});
+    it('should be false when there is no approval', () => {
+      expect(service.isApproved(task)).toBe(false);
+    });
+
+    it('should be true when there is an approval attached to the task', () => {
+      task.approval = new TaskApprovalEntity();
+
+      expect(service.isApproved(task)).toBe(true);
+    });
   });
 
   describe('requestApproval', () => {
@@ -55,10 +116,16 @@ describe('TasksService', () => {
   });
 
   describe('markAsComplete', () => {
-    it('should update the completion timestamp', () => {});
+    it('should update the completion timestamp', () => {
+      expect(service.markAsComplete(task).completionDate).toBe(Date.now());
+    });
   });
 
   describe('approve', () => {
-    it('should create and attach a task approval', async () => {});
+    it('should create and attach a task approval', async () => {
+      await service.approve(task);
+
+      expect(task.approval).toBeDefined();
+    });
   });
 });

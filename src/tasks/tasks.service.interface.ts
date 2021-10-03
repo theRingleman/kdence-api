@@ -7,7 +7,7 @@ export interface TasksServiceInterface {
   update(task: TaskEntity): Promise<boolean>;
   delete(task: TaskEntity): Promise<boolean>;
   fetch(id: number): Promise<TaskEntity>;
-  markAsComplete(task: TaskEntity): void;
+  markAsComplete(task: TaskEntity): TaskEntity;
   isComplete(task: TaskEntity): boolean;
   requestApproval(task: TaskEntity): void;
   isApproved(task: TaskEntity): boolean;
