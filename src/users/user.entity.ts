@@ -1,12 +1,15 @@
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { HouseholdEntity } from '../households/household.entity';
 import { GoalEntity } from '../goals/goal.entity';
+import { RoleEntity } from '../roles/role.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -30,4 +33,8 @@ export class UserEntity {
 
   @OneToMany(() => GoalEntity, (goal) => goal.user)
   goals: GoalEntity[];
+
+  @ManyToMany(() => RoleEntity)
+  @JoinTable()
+  roles: RoleEntity[];
 }

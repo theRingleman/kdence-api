@@ -12,6 +12,7 @@ import { GoalEntity } from './goals/goal.entity';
 import { TaskEntity } from './tasks/task.entity';
 import { RolesModule } from './roles/roles.module';
 import { TaskApprovalEntity } from './tasks/taskApproval.entity';
+import { RoleEntity } from './roles/role.entity';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TaskApprovalEntity } from './tasks/taskApproval.entity';
         GoalEntity,
         TaskEntity,
         TaskApprovalEntity,
+        RoleEntity,
       ],
       synchronize: true,
     }),
