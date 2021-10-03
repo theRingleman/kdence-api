@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserServiceInterface } from './dtos/user.service.interface';
+import { UserServiceInterface } from './user.service.interface';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UserEntity } from './user.entity';
 import { HouseholdEntity } from '../households/household.entity';

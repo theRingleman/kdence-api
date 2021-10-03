@@ -1,5 +1,5 @@
 import { HouseholdEntity } from '../../households/household.entity';
-import { Role } from '../../roles/role.entity';
+import { Role } from '../../roles/roles.decorator';
 import { GoalEntity } from '../../goals/goal.entity';
 
 export class CreateUserDto {
