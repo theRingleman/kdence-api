@@ -49,7 +49,8 @@ describe('TasksService', () => {
         .mockResolvedValueOnce({ affected: 1 });
       task.description = 'testing again';
 
-      expect(await service.update(task)).toBe(true);
+      await service.update(1, task);
+
       expect(updateSpy).toBeCalled();
     });
   });
