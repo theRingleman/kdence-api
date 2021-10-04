@@ -4,7 +4,7 @@ import { TaskEntity } from './task.entity';
 export interface TasksServiceInterface {
   create(dto: CreateTaskDto): TaskEntity;
   save(task: TaskEntity): Promise<TaskEntity>;
-  update(task: TaskEntity): Promise<boolean>;
+  update(id: number, task: TaskEntity): Promise<TaskEntity>;
   delete(task: TaskEntity): Promise<boolean>;
   fetch(id: number): Promise<TaskEntity>;
   markAsComplete(task: TaskEntity): TaskEntity;

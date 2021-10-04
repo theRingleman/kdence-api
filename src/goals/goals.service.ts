@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { GoalEntity } from './goal.entity';
 import { CreateGoalDto } from './dtos/create.goal.dto';
 import { GoalServiceInterface } from './goal.service.interface';
@@ -33,8 +33,13 @@ export class GoalsService implements GoalServiceInterface {
     return goal.completionValue <= goal.earnedValue;
   }
 
-  async update(goal: GoalEntity): Promise<boolean> {
-    return false;
+  update(id: number, goal: GoalEntity): Promise<GoalEntity> {
+    return this.goalRepo.update(id, goal).then((res) => {
+      if (res.affected > 0) {
+        return goal;
+      }
+      throw new HttpException('Unable to update task.', 500);
+    });
   }
 
   completeGoal(goal: GoalEntity): GoalEntity {

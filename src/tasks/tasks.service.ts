@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { TaskEntity } from './task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,8 +48,12 @@ export class TasksService implements TasksServiceInterface {
     return this.taskRepo.save(task);
   }
 
-  async update(task: TaskEntity): Promise<boolean> {
-    const response = await this.taskRepo.update(task.id, task);
-    return response.affected >= 1;
+  update(id: number, task: TaskEntity): Promise<TaskEntity> {
+    return this.taskRepo.update(task.id, task).then((res) => {
+      if (res.affected > 0) {
+        return task;
+      }
+      throw new HttpException('Task not updated.', 500);
+    });
   }
 }

@@ -11,6 +11,7 @@ describe('GoalsService', () => {
     save: () => null,
     findOne: () => createGoalEntity(),
     delete: () => true,
+    update: () => null,
   };
 
   beforeEach(async () => {
@@ -48,13 +49,28 @@ describe('GoalsService', () => {
 
   describe('update', () => {
     it('should update and persist a goal', async () => {
+      const goalSpy = jest
+        .spyOn(goalRepo, 'update')
+        .mockResolvedValueOnce({ affected: 1 });
       const goal = createGoalEntity();
       goal.earnedValue = 100;
 
-      await service.update(goal);
+      await service.update(1, goal);
 
-      //TODO: Need to mock the repo
-      expect(true).toBe(true);
+      expect(goalSpy).toBeCalled();
+    });
+
+    it('should throw an error when an update fails', async () => {
+      const goalSpy = jest
+        .spyOn(goalRepo, 'update')
+        .mockResolvedValueOnce({ affected: 0 });
+      const goal = createGoalEntity();
+
+      await service.update(1, goal).catch((err) => {
+        expect(err.status).toBe(500);
+      });
+
+      expect(goalSpy).toBeCalled();
     });
   });
 

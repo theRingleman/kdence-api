@@ -22,7 +22,7 @@ export class UsersService implements UserServiceInterface {
     return Promise.resolve([]);
   }
 
-  update(user: UserEntity): Promise<boolean> {
-    return Promise.resolve(false);
+  update(id: number, user: UserEntity): Promise<UserEntity> {
+    return Promise.resolve(null);
   }
 }
