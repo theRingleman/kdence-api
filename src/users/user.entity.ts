@@ -10,6 +10,7 @@ import {
 import { HouseholdEntity } from '../households/household.entity';
 import { GoalEntity } from '../goals/goal.entity';
 import { RoleEntity } from '../roles/role.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -26,6 +27,7 @@ export class UserEntity {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @ManyToOne(() => HouseholdEntity, (household) => household.users)

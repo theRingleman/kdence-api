@@ -13,6 +13,7 @@ import { TaskEntity } from './tasks/task.entity';
 import { RolesModule } from './roles/roles.module';
 import { TaskApprovalEntity } from './tasks/taskApproval.entity';
 import { RoleEntity } from './roles/role.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { RoleEntity } from './roles/role.entity';
       synchronize: true,
     }),
     RolesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

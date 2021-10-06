@@ -5,16 +5,19 @@ import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { HouseholdsService } from '../households/households.service';
 
 @Injectable()
 export class UsersService implements UserServiceInterface {
   constructor(
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
+    private householdService: HouseholdsService,
   ) {}
 
-  async create(dto: CreateUserDto): Promise<UserEntity> {
+  async create(dto: CreateUserDto, householdId: number): Promise<UserEntity> {
     const user = this.userRepo.create(dto);
     user.password = await this.securePassword(user.password);
+    user.household = await this.householdService.fetch(householdId);
     return user;
   }
 
@@ -40,6 +43,10 @@ export class UsersService implements UserServiceInterface {
 
   save(user: UserEntity): Promise<UserEntity> {
     return this.userRepo.save(user);
+  }
+
+  async findOneByEmail(email: string): Promise<UserEntity> {
+    return this.userRepo.findOne({ where: { email } });
   }
 
   private securePassword(password: string) {

@@ -8,5 +8,6 @@ import { HouseholdEntity } from './household.entity';
   imports: [TypeOrmModule.forFeature([HouseholdEntity])],
   providers: [HouseholdsService],
   controllers: [HouseholdsController],
+  exports: [HouseholdsService],
 })
 export class HouseholdsModule {}
