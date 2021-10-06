@@ -1,16 +1,14 @@
 import { HouseholdEntity } from '../../households/household.entity';
 import { Role } from '../../roles/roles.decorator';
 import { GoalEntity } from '../../goals/goal.entity';
+import { RoleEntity } from '../../roles/role.entity';
 
 export class CreateUserDto {
-  constructor(
-    public readonly firstName: string,
-    public readonly lastName: string,
-    public readonly email: string,
-    public readonly password: string,
-    public readonly household: HouseholdEntity,
-    public readonly roles: Role[],
-  ) {}
-
-  public readonly goals: GoalEntity[] = [];
+  public goals: GoalEntity[] = [];
+  public firstName: string;
+  public lastName: string;
+  public email: string;
+  public password: string;
+  public household: HouseholdEntity;
+  public roles: RoleEntity[] = [];
 }
