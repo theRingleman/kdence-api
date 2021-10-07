@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
@@ -34,18 +35,21 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
-  @Roles(Role.Admin)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/profile')
   async profile(@Request() req) {
     return req.user;
   }
 
+  @Roles(Role.Admin)
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get('/admin')
-  async makeAdmin(@Request() req) {
+  @Post('/admin')
+  async makeAdmin(@Request() req, @Body() body) {
     return this.usersService.save(
-      await this.rolesService.addRoleToUser(Role.Admin, req.user),
+      await this.rolesService.addRoleToUser(
+        Role.Admin,
+        await this.usersService.fetch(body.userId),
+      ),
     );
   }
 }
