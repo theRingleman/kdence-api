@@ -26,14 +26,12 @@ export class UsersController {
     return this.service.save(await this.service.create(dto, householdId));
   }
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async fetch(@Param() params): Promise<UserEntity> {
     return this.service.fetch(params.id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   async fetchAll(@Param() params): Promise<UserEntity[]> {
