@@ -36,7 +36,7 @@ export class UserEntity {
   @OneToMany(() => GoalEntity, (goal) => goal.user)
   goals: GoalEntity[];
 
-  @ManyToMany(() => RoleEntity)
+  @ManyToMany(() => RoleEntity, { eager: true })
   @JoinTable()
   roles: RoleEntity[];
 }
