@@ -4,6 +4,7 @@ import { CreateGoalDto } from './dtos/create.goal.dto';
 import { GoalServiceInterface } from './goal.service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserEntity } from '../users/user.entity';
 
 @Injectable()
 export class GoalsService implements GoalServiceInterface {
@@ -20,6 +21,10 @@ export class GoalsService implements GoalServiceInterface {
     return this.goalRepo.findOne(id);
   }
 
+  async fetchAll(user: UserEntity): Promise<GoalEntity[]> {
+    return this.goalRepo.find({ where: { userId: user.id } });
+  }
+
   create(dto: CreateGoalDto): GoalEntity {
     return this.goalRepo.create(dto);
   }
@@ -33,10 +38,10 @@ export class GoalsService implements GoalServiceInterface {
     return goal.completionValue <= goal.earnedValue;
   }
 
-  update(id: number, goal: GoalEntity): Promise<GoalEntity> {
+  update(id: number, goal: Partial<CreateGoalDto>): Promise<GoalEntity> {
     return this.goalRepo.update(id, goal).then((res) => {
       if (res.affected > 0) {
-        return goal;
+        return this.fetch(id);
       }
       throw new HttpException('Unable to update task.', 500);
     });
