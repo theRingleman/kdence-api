@@ -6,18 +6,21 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { HouseholdsService } from '../households/households.service';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class UsersService implements UserServiceInterface {
   constructor(
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
     private householdService: HouseholdsService,
+    private rolesService: RolesService,
   ) {}
 
   async create(dto: CreateUserDto, householdId: number): Promise<UserEntity> {
     const user = this.userRepo.create(dto);
     user.password = await this.securePassword(user.password);
     user.household = await this.householdService.fetch(householdId);
+    await this.rolesService.addRoleToUser(dto.roleType, user);
     return user;
   }
 

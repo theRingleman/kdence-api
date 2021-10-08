@@ -1,7 +1,6 @@
 import { HouseholdEntity } from '../../households/household.entity';
 import { Role } from '../../roles/roles.decorator';
 import { GoalEntity } from '../../goals/goal.entity';
-import { RoleEntity } from '../../roles/role.entity';
 
 export class CreateUserDto {
   public goals: GoalEntity[] = [];
@@ -10,5 +9,5 @@ export class CreateUserDto {
   public email: string;
   public password: string;
   public household: HouseholdEntity;
-  public roles: RoleEntity[] = [];
+  public roleType: Role;
 }
