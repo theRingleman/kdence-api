@@ -13,12 +13,9 @@ export class TaskApprovalEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'bigint' })
   approved: number;
 
   @ManyToOne(() => UserEntity)
   user: UserEntity;
-
-  @OneToOne(() => TaskEntity, (task) => task.approval)
-  task: TaskEntity;
 }

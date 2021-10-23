@@ -30,7 +30,9 @@ export class UserEntity {
   @Exclude()
   password: string;
 
-  @ManyToOne(() => HouseholdEntity, (household) => household.users)
+  @ManyToOne(() => HouseholdEntity, (household) => household.users, {
+    eager: true,
+  })
   household: HouseholdEntity;
 
   @OneToMany(() => GoalEntity, (goal) => goal.user)

@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -19,12 +20,16 @@ export class TaskEntity {
   @Column()
   value: number;
 
-  @Column()
-  completionDate?: number;
+  @Column({ nullable: true, type: 'bigint' })
+  completionDate: number | null = null;
 
-  @ManyToOne(() => GoalEntity, (goal) => goal.tasks)
+  @ManyToOne(() => GoalEntity, (goal) => goal.tasks, {
+    eager: true,
+    cascade: true,
+  })
   goal: GoalEntity;
 
-  @OneToOne(() => TaskApprovalEntity, (taskApproval) => taskApproval.task)
+  @OneToOne(() => TaskApprovalEntity, { eager: true, cascade: true })
+  @JoinColumn()
   approval?: TaskApprovalEntity;
 }

@@ -2,21 +2,24 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
+  Patch,
   Post,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UserEntity } from './user.entity';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Public } from '../auth/public.decorator';
 
 @Controller('households/:householdId/users')
 export class UsersController {
   constructor(private service: UsersService) {}
 
+  @Public()
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async create(
@@ -36,5 +39,17 @@ export class UsersController {
   @Get()
   async fetchAll(@Param() params): Promise<UserEntity[]> {
     return this.service.fetchAll(params.householdId);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch(':id')
+  async update(@Param() params, @Body() user): Promise<UserEntity> {
+    return this.service.update(params.id, user);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async delete(@Param() params): Promise<void> {
+    await this.service.delete(await this.service.fetch(params.id));
   }
 }

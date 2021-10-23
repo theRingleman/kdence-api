@@ -5,19 +5,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TasksServiceInterface } from './tasks.service.interface';
 import { CreateTaskDto } from './dtos/create.task.dto';
 import { TaskApprovalEntity } from './taskApproval.entity';
+import { GoalsService } from '../goals/goals.service';
+import { UserEntity } from '../users/user.entity';
 
 @Injectable()
 export class TasksService implements TasksServiceInterface {
   constructor(
     @InjectRepository(TaskEntity) private taskRepo: Repository<TaskEntity>,
+    private goalsService: GoalsService,
   ) {}
 
-  async approve(task: TaskEntity): Promise<void> {
-    task.approval = new TaskApprovalEntity();
+  async approve(task: TaskEntity, user: UserEntity): Promise<void> {
+    const approval = new TaskApprovalEntity();
+    approval.approved = Date.now();
+    approval.user = user;
+    task.approval = approval;
+    task.goal.earnedValue = task.goal.earnedValue + task.value;
+    await this.save(task);
   }
 
-  create(dto: CreateTaskDto): TaskEntity {
-    return this.taskRepo.create(dto);
+  async create(dto: CreateTaskDto, goalId: number): Promise<TaskEntity> {
+    const goal = await this.goalsService.fetch(goalId);
+    const task = this.taskRepo.create(dto);
+    task.goal = goal;
+    return task;
   }
 
   async delete(task: TaskEntity): Promise<boolean> {
@@ -48,12 +59,12 @@ export class TasksService implements TasksServiceInterface {
     return this.taskRepo.save(task);
   }
 
-  update(id: number, task: TaskEntity): Promise<TaskEntity> {
-    return this.taskRepo.update(task.id, task).then((res) => {
-      if (res.affected > 0) {
-        return task;
-      }
-      throw new HttpException('Task not updated.', 500);
-    });
+  async update(id: number, task: TaskEntity): Promise<TaskEntity> {
+    const taskBack = this.fetch(id);
+    return this.taskRepo.save({ ...taskBack, ...task });
+  }
+
+  async fetchAll(goalId: number): Promise<TaskEntity[]> {
+    return this.taskRepo.find({ where: { goal: { id: goalId } } });
   }
 }

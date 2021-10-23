@@ -1,5 +1,4 @@
-export class CreateTaskDto {
-  constructor(public readonly description: string) {}
-  readonly value = 0;
-  readonly completed = false;
+export interface CreateTaskDto {
+  description: string;
+  value: number;
 }

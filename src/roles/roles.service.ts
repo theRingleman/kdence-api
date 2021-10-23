@@ -21,7 +21,7 @@ export class RolesService {
     let roleEntity: RoleEntity = await this.repo.findOne({ name: role });
 
     if (!roleEntity) {
-      roleEntity = await this.repo.save(this.repo.create({ name: Role.Admin }));
+      roleEntity = await this.repo.save(this.repo.create({ name: role }));
     }
 
     return roleEntity;

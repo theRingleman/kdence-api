@@ -33,15 +33,16 @@ export class UsersService implements UserServiceInterface {
   }
 
   fetchAll(householdId: number): Promise<UserEntity[]> {
-    const builder = this.userRepo.createQueryBuilder();
-    builder.where('householdId = :householdId', { householdId });
+    const builder = this.userRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'roles')
+      .where('householdId = :householdId', { householdId });
     return builder.getMany();
   }
 
-  update(id: number, user: UserEntity): Promise<UserEntity> {
-    return this.userRepo.update(id, user).then((res) => {
-      if (res.affected > 0) return this.fetch(id);
-    });
+  async update(id: number, user: UserEntity): Promise<UserEntity> {
+    const userOld = await this.fetch(id);
+    return this.userRepo.save({ ...userOld, ...user });
   }
 
   save(user: UserEntity): Promise<UserEntity> {
@@ -49,7 +50,7 @@ export class UsersService implements UserServiceInterface {
   }
 
   async findOneByEmail(email: string): Promise<UserEntity> {
-    return this.userRepo.findOne({ where: { email } });
+    return this.userRepo.findOneOrFail({ where: { email } });
   }
 
   private securePassword(password: string) {
