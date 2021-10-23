@@ -23,7 +23,7 @@ import { AuthModule } from './auth/auth.module';
     TasksModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      url: process.env.DB_URL,
+      url: process.env.CLEARDB_DATABASE_URL,
       entities: [
         UserEntity,
         HouseholdEntity,
