@@ -32,7 +32,7 @@ import { AuthModule } from './auth/auth.module';
         TaskApprovalEntity,
         RoleEntity,
       ],
-      synchronize: true,
+      synchronize: false,
     }),
     RolesModule,
     AuthModule,
