@@ -30,13 +30,12 @@ export class HouseholdsService implements HouseholdServiceInterface {
     return this.repo.find();
   }
 
-  update(id: number, household: HouseholdEntity): Promise<HouseholdEntity> {
-    return this.repo.update(id, household).then((res) => {
-      if (res.affected > 0) {
-        return this.fetch(id);
-      }
-      throw new HttpException('Could not process update', 500);
-    });
+  async update(
+    id: number,
+    household: HouseholdEntity,
+  ): Promise<HouseholdEntity> {
+    const householdBack = await this.fetch(id);
+    return this.repo.save({ ...householdBack, ...household });
   }
 
   save(household: HouseholdEntity): Promise<HouseholdEntity> {

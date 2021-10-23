@@ -4,13 +4,17 @@ import { CreateGoalDto } from './dtos/create.goal.dto';
 import { GoalServiceInterface } from './goal.service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/user.entity';
+import { HouseholdEntity } from '../households/household.entity';
+import { TaskEntity } from '../tasks/task.entity';
 
 @Injectable()
 export class GoalsService implements GoalServiceInterface {
   constructor(
     @InjectRepository(GoalEntity)
     private goalRepo: Repository<GoalEntity>,
+    private usersService: UsersService,
   ) {}
 
   async save(goal: GoalEntity): Promise<GoalEntity> {
@@ -21,12 +25,17 @@ export class GoalsService implements GoalServiceInterface {
     return this.goalRepo.findOne(id);
   }
 
-  async fetchAll(user: UserEntity): Promise<GoalEntity[]> {
-    return this.goalRepo.find({ where: { userId: user.id } });
-  }
+  async create(dto: CreateGoalDto): Promise<GoalEntity> {
+    const goal = this.goalRepo.create({
+      ...dto,
+      fulfilled: false,
+      completionDate: undefined,
+      earnedValue: 0,
+    });
 
-  create(dto: CreateGoalDto): GoalEntity {
-    return this.goalRepo.create(dto);
+    goal.user = await this.usersService.fetch(dto.userId);
+
+    return goal;
   }
 
   async delete(goal: GoalEntity): Promise<boolean> {
@@ -38,13 +47,9 @@ export class GoalsService implements GoalServiceInterface {
     return goal.completionValue <= goal.earnedValue;
   }
 
-  update(id: number, goal: Partial<CreateGoalDto>): Promise<GoalEntity> {
-    return this.goalRepo.update(id, goal).then((res) => {
-      if (res.affected > 0) {
-        return this.fetch(id);
-      }
-      throw new HttpException('Unable to update task.', 500);
-    });
+  async update(id: number, goal: GoalEntity): Promise<GoalEntity> {
+    const goalBack = this.fetch(id);
+    return this.goalRepo.save({ ...goalBack, ...goal });
   }
 
   completeGoal(goal: GoalEntity): GoalEntity {
@@ -53,5 +58,45 @@ export class GoalsService implements GoalServiceInterface {
       goal.fulfilled = true;
     }
     return goal;
+  }
+
+  async getActiveGoals(householdId: number): Promise<GoalEntity[]> {
+    return this.goalRepo
+      .createQueryBuilder('goal')
+      .leftJoinAndMapOne(
+        'goal.user',
+        UserEntity,
+        'user',
+        'goal.userId = user.id',
+      )
+      .leftJoinAndMapOne(
+        'user.household',
+        HouseholdEntity,
+        'household',
+        'household.id = user.householdId',
+      )
+      .where('household.id = :householdId', { householdId })
+      .andWhere('goal.completionDate is null')
+      .getMany();
+  }
+
+  async getCompletedGoals(householdId: number): Promise<GoalEntity[]> {
+    return this.goalRepo
+      .createQueryBuilder('goal')
+      .leftJoinAndMapOne(
+        'goal.user',
+        UserEntity,
+        'user',
+        'goal.userId = user.id',
+      )
+      .leftJoinAndMapOne(
+        'user.household',
+        HouseholdEntity,
+        'household',
+        'household.id = user.householdId',
+      )
+      .where('household.id = :householdId', { householdId })
+      .andWhere('goal.completionDate is not null')
+      .getMany();
   }
 }

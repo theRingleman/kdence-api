@@ -19,7 +19,7 @@ export class GoalEntity {
   @Column()
   item: string;
 
-  @Column()
+  @Column({ nullable: true })
   completionDate?: number;
 
   @Column()

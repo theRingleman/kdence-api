@@ -23,11 +23,7 @@ import { AuthModule } from './auth/auth.module';
     TasksModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'kdence',
+      url: process.env.CLEARDB_DATABASE_URL,
       entities: [
         UserEntity,
         HouseholdEntity,
@@ -36,7 +32,7 @@ import { AuthModule } from './auth/auth.module';
         TaskApprovalEntity,
         RoleEntity,
       ],
-      synchronize: true,
+      synchronize: false,
     }),
     RolesModule,
     AuthModule,

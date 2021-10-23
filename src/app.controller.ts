@@ -14,6 +14,7 @@ import { LocalAuthGuard } from './auth/local-auth.guard';
 import { Role, Roles } from './roles/roles.decorator';
 import { UsersService } from './users/users.service';
 import { RolesService } from './roles/roles.service';
+import { Public } from './auth/public.decorator';
 
 @Controller()
 export class AppController {
@@ -29,6 +30,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
