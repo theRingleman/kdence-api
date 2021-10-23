@@ -22,12 +22,8 @@ import { AuthModule } from './auth/auth.module';
     GoalsModule,
     TasksModule,
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'kdence',
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
       entities: [
         UserEntity,
         HouseholdEntity,
