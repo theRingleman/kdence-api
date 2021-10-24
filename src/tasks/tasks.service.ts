@@ -22,7 +22,7 @@ export class TasksService implements TasksServiceInterface {
     task.approval = approval;
     task.goal.earnedValue = task.goal.earnedValue + task.value;
     if (task.goal.earnedValue >= task.goal.completionValue) {
-      task.completionDate = Date.now();
+      task.goal.completionDate = Date.now();
     }
     await this.save(task);
   }
@@ -74,6 +74,7 @@ export class TasksService implements TasksServiceInterface {
   async fetchAllHouseholdTasks(user: UserEntity): Promise<TaskEntity[]> {
     const builder = this.taskRepo
       .createQueryBuilder('t')
+      .loadRelationIdAndMap('approval', 't.approval')
       .leftJoin('t.goal', 'g', 't.goalId = g.id')
       .leftJoin('g.user', 'u', 'g.userId = u.id')
       .where('u.householdId = :id', { id: user.household.id });
