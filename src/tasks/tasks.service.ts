@@ -21,6 +21,9 @@ export class TasksService implements TasksServiceInterface {
     approval.user = user;
     task.approval = approval;
     task.goal.earnedValue = task.goal.earnedValue + task.value;
+    if (task.goal.earnedValue >= task.goal.completionValue) {
+      task.completionDate = Date.now();
+    }
     await this.save(task);
   }
 

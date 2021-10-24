@@ -19,7 +19,7 @@ export class GoalEntity {
   @Column()
   item: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'bigint' })
   completionDate?: number;
 
   @Column()
