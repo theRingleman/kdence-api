@@ -14,6 +14,7 @@ import { RolesModule } from './roles/roles.module';
 import { TaskApprovalEntity } from './tasks/taskApproval.entity';
 import { RoleEntity } from './roles/role.entity';
 import { AuthModule } from './auth/auth.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     RolesModule,
     AuthModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -21,7 +21,7 @@ export class TaskEntity {
   value: number;
 
   @Column({ nullable: true, type: 'bigint' })
-  completionDate: number | null = null;
+  completionDate: number;
 
   @ManyToOne(() => GoalEntity, (goal) => goal.tasks, {
     eager: true,

@@ -67,4 +67,13 @@ export class TasksService implements TasksServiceInterface {
   async fetchAll(goalId: number): Promise<TaskEntity[]> {
     return this.taskRepo.find({ where: { goal: { id: goalId } } });
   }
+
+  async fetchAllHouseholdTasks(user: UserEntity): Promise<TaskEntity[]> {
+    const builder = this.taskRepo
+      .createQueryBuilder('t')
+      .leftJoin('t.goal', 'g', 't.goalId = g.id')
+      .leftJoin('g.user', 'u', 'g.userId = u.id')
+      .where('u.householdId = :id', { id: user.household.id });
+    return builder.getMany();
+  }
 }
