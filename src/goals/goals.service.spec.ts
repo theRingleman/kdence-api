@@ -3,6 +3,8 @@ import { GoalsService } from './goals.service';
 import { createGoalDto, createGoalEntity } from './test/helpers.test';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { GoalEntity } from './goal.entity';
+import { UsersService } from '../users/users.service';
+import { UserEntity } from '../users/user.entity';
 
 describe('GoalsService', () => {
   let service: GoalsService;
@@ -22,6 +24,10 @@ describe('GoalsService', () => {
           provide: getRepositoryToken(GoalEntity),
           useValue: goalRepo,
         },
+        {
+          provide: UsersService,
+          useValue: { fetch: () => new UserEntity() },
+        },
       ],
     }).compile();
 
@@ -40,19 +46,18 @@ describe('GoalsService', () => {
   });
 
   describe('create', () => {
-    it('should create a goal entity', () => {
-      expect(
-        service.create(createGoalDto('test', 'Testing', 100000)).id,
-      ).toBeDefined();
+    it('should create a goal entity', async () => {
+      const entity = await service.create(
+        createGoalDto('test', 'Testing', 100000),
+      );
+      expect(entity.id).toBeDefined();
     });
   });
 
   describe('update', () => {
     it('should update and persist a goal', async () => {
-      const goalSpy = jest
-        .spyOn(goalRepo, 'update')
-        .mockResolvedValueOnce({ affected: 1 });
       const goal = createGoalEntity();
+      const goalSpy = jest.spyOn(goalRepo, 'save').mockResolvedValueOnce(goal);
       goal.earnedValue = 100;
 
       await service.update(1, goal);
@@ -61,10 +66,8 @@ describe('GoalsService', () => {
     });
 
     it('should throw an error when an update fails', async () => {
-      const goalSpy = jest
-        .spyOn(goalRepo, 'update')
-        .mockResolvedValueOnce({ affected: 0 });
       const goal = createGoalEntity();
+      const goalSpy = jest.spyOn(goalRepo, 'save').mockResolvedValueOnce(goal);
 
       await service.update(1, goal).catch((err) => {
         expect(err.status).toBe(500);
@@ -86,8 +89,10 @@ describe('GoalsService', () => {
   });
 
   describe('isGoalComplete', () => {
-    it('should return true if the goal has reached its completed status', () => {
-      const goal = service.create(createGoalDto('test', 'Testing', 100000));
+    it('should return true if the goal has reached its completed status', async () => {
+      const goal = await service.create(
+        createGoalDto('test', 'Testing', 100000),
+      );
       goal.earnedValue = 100001;
 
       expect(service.isGoalComplete(goal)).toBe(true);

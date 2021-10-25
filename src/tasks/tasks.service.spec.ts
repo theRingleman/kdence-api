@@ -4,6 +4,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { TaskEntity } from './task.entity';
 import { createDto, createTaskEntity } from './tests/helper.test';
 import { TaskApprovalEntity } from './taskApproval.entity';
+import { UserEntity } from '../users/user.entity';
+import { GoalsService } from '../goals/goals.service';
+import { GoalEntity } from '../goals/goal.entity';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -21,6 +24,7 @@ describe('TasksService', () => {
       providers: [
         TasksService,
         { provide: getRepositoryToken(TaskEntity), useValue: taskRepo },
+        { provide: GoalsService, useValue: { fetch: () => new GoalEntity() } },
       ],
     }).compile();
 
@@ -33,10 +37,10 @@ describe('TasksService', () => {
   });
 
   describe('create', () => {
-    it('should create an entity based on a dto', () => {
+    it('should create an entity based on a dto', async () => {
       const dto = createDto('testing');
 
-      const entity = service.create(dto);
+      const entity = await service.create(dto, 1);
 
       expect(entity.description).toBe(dto.description);
     });
@@ -45,8 +49,8 @@ describe('TasksService', () => {
   describe('update', () => {
     it('should update a task', async () => {
       const updateSpy = jest
-        .spyOn(taskRepo, 'update')
-        .mockResolvedValueOnce({ affected: 1 });
+        .spyOn(taskRepo, 'save')
+        .mockResolvedValueOnce(task);
       task.description = 'testing again';
 
       await service.update(1, task);
@@ -118,13 +122,13 @@ describe('TasksService', () => {
 
   describe('markAsComplete', () => {
     it('should update the completion timestamp', () => {
-      expect(service.markAsComplete(task).completionDate).toBe(Date.now());
+      expect(service.markAsComplete(task).completionDate).toBeDefined();
     });
   });
 
   describe('approve', () => {
     it('should create and attach a task approval', async () => {
-      await service.approve(task);
+      await service.approve(task, new UserEntity());
 
       expect(task.approval).toBeDefined();
     });

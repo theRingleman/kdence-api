@@ -6,6 +6,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { createTestUserDto, createTestUserEntity } from './test/helpers.test';
+import { HouseholdsService } from '../households/households.service';
+import { RolesService } from '../roles/roles.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -16,6 +18,11 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         { provide: getRepositoryToken(UserEntity), useValue: repo },
+        {
+          provide: HouseholdsService,
+          useValue: { fetch: () => new HouseholdEntity() },
+        },
+        { provide: RolesService, useValue: { addRoleToUser: () => undefined } },
       ],
     }).compile();
 
@@ -28,7 +35,7 @@ describe('UsersService', () => {
 
   describe('create', () => {
     it('should salt and hash a password', async () => {
-      const entity = await service.create({ ...createTestUserDto() });
+      const entity = await service.create({ ...createTestUserDto() }, 1);
 
       expect(entity.password).toBeDefined();
       expect(entity.password).not.toEqual('password');
